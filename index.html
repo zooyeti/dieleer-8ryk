@@ -250,6 +250,68 @@
   @supports (backdrop-filter: blur(6px)) {
     .tab-bar { background: color-mix(in srgb, var(--surface) 88%, transparent); backdrop-filter: blur(10px); }
   }
+
+  /* ---------- Phase 2: rating control, forms, filters ---------- */
+  .scale { display: flex; gap: 6px; margin: 10px 0 4px; }
+  .step {
+    flex: 1; background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    padding: 8px 2px 6px; display: flex; flex-direction: column; align-items: center; gap: 3px;
+    color: var(--text); cursor: pointer; min-height: 44px;
+  }
+  .step.on { background: var(--accent-soft); border-color: var(--accent); }
+  .step .n { font-size: 11px; color: var(--muted); }
+  .step.on .n { color: var(--accent); font-weight: 600; }
+  .hint { font-size: 12.5px; color: var(--muted); margin: 6px 0 4px; line-height: 1.4; }
+
+  .rating-list { display: flex; flex-direction: column; gap: 8px; }
+  .rating-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 8px 12px; }
+  .rating-name { font-size: 14.5px; font-weight: 600; }
+  .rate { display: flex; align-items: center; gap: 6px; }
+  .rate .lab { font-size: 12px; color: var(--muted); white-space: nowrap; }
+
+  .chip.marker-hit { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  .chip.marker-divisive { background: var(--surface-2); color: var(--text); font-weight: 600; }
+
+  .text-input {
+    display: block; width: 100%; min-height: 44px; margin: 8px 0;
+    background: var(--surface); color: var(--text); border: 1px solid var(--line);
+    border-radius: 12px; padding: 10px 12px; font-size: 15px; font-family: inherit;
+  }
+  textarea.text-input { min-height: 64px; resize: vertical; }
+  .primary-btn {
+    display: block; width: 100%; min-height: 44px; background: var(--accent); color: var(--on-accent);
+    border: none; border-radius: 12px; font-size: 15.5px; font-weight: 600; cursor: pointer; margin: 6px 0;
+  }
+  .primary-btn:active { transform: scale(0.985); }
+  .text-btn { background: none; border: none; color: var(--accent); font-weight: 600; font-size: 14px; padding: 8px 0; cursor: pointer; min-height: 44px; }
+
+  .base-picker { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+  .base-chip {
+    background: var(--surface-2); color: var(--text); border: 1px solid transparent; border-radius: 999px;
+    padding: 8px 14px; font-size: 13.5px; cursor: pointer; min-height: 44px;
+  }
+  .base-chip.on { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); font-weight: 600; }
+
+  .autocomplete-wrap { position: relative; }
+  .autocomplete-list {
+    position: absolute; left: 0; right: 0; top: 100%; z-index: 5; background: var(--surface);
+    border: 1px solid var(--line); border-radius: 12px; overflow: hidden; box-shadow: 0 6px 18px rgba(0,0,0,.15);
+  }
+  .autocomplete-item { display: block; width: 100%; text-align: left; padding: 10px 14px; background: none; border: none; color: var(--text); font-size: 14.5px; cursor: pointer; min-height: 44px; }
+  .autocomplete-item:hover, .autocomplete-item:active { background: var(--surface-2); }
+
+  .offmenu-box, .start-night-box, .name-picker { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; margin-top: 22px; }
+
+  .filters { margin: 8px 0 4px; font-size: 14px; color: var(--muted); }
+  .filters summary { cursor: pointer; padding: 8px 0; min-height: 44px; display: flex; align-items: center; }
+  .filters label { display: block; margin: 8px 0; font-size: 13.5px; }
+  .filters input[type="number"] { width: 56px; min-height: 36px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--text); text-align: center; margin: 0 4px; }
+
+  .filter-row { display: flex; gap: 6px; margin: 10px 0 16px; }
+  .filter-chip { flex: 1; min-height: 44px; background: var(--surface-2); color: var(--text); border: 1px solid transparent; border-radius: 999px; font-size: 13px; cursor: pointer; }
+  .filter-chip.on { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); font-weight: 600; }
+
+  .group-note { margin: 6px 0 0; color: var(--muted); font-size: 12.5px; }
 </style>
 </head>
 <body>
@@ -1269,6 +1331,7 @@ c-96 8 -148 25 -148 49 0 14 -8 18 -35 18 -33 0 -35 2 -35 35 0 32 2 35 30 35
   <a href="#/me" data-tab="me" class="tab-link"><span class="dot"></span>Me</a>
 </nav>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js"></script>
 <script>
 (function () {
   "use strict";
@@ -1279,15 +1342,38 @@ c-96 8 -148 25 -148 49 0 14 -8 18 -35 18 -33 0 -35 2 -35 35 0 32 2 35 30 35
     "close-variant": "Close Variants",
     "weirder": "Weirder Negroni",
     "wild": "Wild Negronis",
-    "dessert": "Dessert"
+    "dessert": "Dessert",
+    "off-menu": "Off-menu tonight"
   };
 
   var BASE_LABELS = {
     gin: "Gin", vodka: "Vodka", rum: "Rum", tequila: "Tequila",
-    whisky: "Whisky", brandy: "Brandy", other: "Other"
+    whisky: "Whisky", brandy: "Brandy", vermouth: "Sherry/Vermouth", other: "Other"
   };
+  var BASE_OPTIONS = ["gin", "vodka", "rum", "tequila", "whisky", "brandy", "vermouth", "other"];
 
-  var state = { nights: null, updated: null, error: null };
+  // Public by design — this is a publishable/anon key, meant to sit in client-side code.
+  var SUPABASE_URL = "https://ylxizoepyqpulasqqyfc.supabase.co";
+  var SUPABASE_KEY = "sb_publishable_ite9_Hl4DSExGhyPXQys8Q_O0JeLt97";
+  var LS_FRIEND = "dieleer:friendId";
+  var LS_ME_FILTER = "dieleer:meFilter";
+
+  var state = {
+    nights: null,            // planned nights, from data.json — the Nights archive reads ONLY this
+    spontaneousNights: [],   // rows from Supabase `nights` — merge into Tonight only, never the archive
+    customItems: {},         // night_id -> [ {id,name,description,base,tags,strength,sweetSour,source,recipe,offMenu:true,addedByName} ]
+    ratingsByKey: {},        // "night_id|item_id" -> [ {friendId,friendName,score,createdAt} ]
+    friends: [],             // [ {id,name,emoji} ]
+    friendId: null,
+    updated: null,
+    error: null,
+    sb: null,
+    dbReady: false,          // true once the first Supabase read has come back (success or handled failure)
+    libraryQuery: "",
+    libraryMinStrength: 0, libraryMaxStrength: 10,
+    libraryMinSweet: 0, libraryMaxSweet: 10,
+    meFilter: "4plus"
+  };
   var app = document.getElementById("app");
   var updatedLine = document.getElementById("updated-line");
 
@@ -1299,6 +1385,24 @@ c-96 8 -148 25 -148 49 0 14 -8 18 -35 18 -33 0 -35 2 -35 35 0 32 2 35 30 35
     });
   }
 
+  function lsGet(key, fallback) {
+    try {
+      var v = window.localStorage.getItem(key);
+      return v === null ? fallback : v;
+    } catch (e) { return fallback; }
+  }
+  function lsSet(key, val) {
+    try { window.localStorage.setItem(key, val); } catch (e) { /* private mode, quota, etc. */ }
+  }
+
+  function slugify(name) {
+    return String(name || "")
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "drink";
+  }
+
   function parseYMD(s) {
     var parts = String(s).split("-").map(Number);
     return new Date(parts[0], parts[1] - 1, parts[2]);
@@ -1307,6 +1411,12 @@ c-96 8 -148 25 -148 49 0 14 -8 18 -35 18 -33 0 -35 2 -35 35 0 32 2 35 30 35
   function todayLocal() {
     var t = new Date();
     return new Date(t.getFullYear(), t.getMonth(), t.getDate());
+  }
+
+  function todayYMD() {
+    var d = todayLocal();
+    function pad(n) { return n < 10 ? "0" + n : "" + n; }
+    return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
   }
 
   function dayDiff(a, b) {
@@ -1334,6 +1444,7 @@ c-96 8 -148 25 -148 49 0 14 -8 18 -35 18 -33 0 -35 2 -35 35 0 32 2 35 30 35
     return "Upcoming — " + formatDate(dateStr);
   }
 
+  // Planned nights only — this is what the Nights archive reads. Spontaneous nights never join it.
   function allNightsSorted() {
     if (!state.nights) return [];
     return state.nights.slice().sort(function (a, b) {
@@ -1341,7 +1452,16 @@ c-96 8 -148 25 -148 49 0 14 -8 18 -35 18 -33 0 -35 2 -35 35 0 32 2 35 30 35
     });
   }
 
-  function findNight(id) {
+  // Planned + spontaneous, merged — Tonight's own resolution only. Never used for the archive.
+  function allNightsForTonight() {
+    var planned = state.nights || [];
+    var spontaneous = state.spontaneousNights || [];
+    return planned.concat(spontaneous).slice().sort(function (a, b) {
+      return parseYMD(b.date) - parseYMD(a.date);
+    });
+  }
+
+  function findPlannedNight(id) {
     if (!state.nights) return null;
     for (var i = 0; i < state.nights.length; i++) {
       if (state.nights[i].id === id) return state.nights[i];
@@ -1349,20 +1469,136 @@ c-96 8 -148 25 -148 49 0 14 -8 18 -35 18 -33 0 -35 2 -35 35 0 32 2 35 30 35
     return null;
   }
 
-  function findCocktail(id) {
-    if (!state.nights) return null;
-    for (var n = 0; n < state.nights.length; n++) {
-      var cocktails = state.nights[n].cocktails || [];
-      for (var c = 0; c < cocktails.length; c++) {
-        if (cocktails[c].id === id) return { night: state.nights[n], cocktail: cocktails[c] };
-      }
+  function findSpontaneousNight(id) {
+    for (var i = 0; i < state.spontaneousNights.length; i++) {
+      if (state.spontaneousNights[i].id === id) return state.spontaneousNights[i];
     }
     return null;
   }
 
+  // Looks in both — a spontaneous night still needs to open (Tonight, a direct link while it's
+  // live) even though it never appears in the archive listing.
+  function findNight(id) {
+    return findPlannedNight(id) || findSpontaneousNight(id);
+  }
+
+  // A night's full drink list: its planned cocktails (if any) plus off-menu additions for that
+  // night_id, each off-menu one flagged so the card/detail views can mark it.
+  function nightCocktails(night) {
+    var planned = (night.cocktails || []).slice();
+    var custom = (state.customItems[night.id] || []).map(function (c) {
+      return Object.assign({}, c, { offMenu: true });
+    });
+    return planned.concat(custom);
+  }
+
+  // Every drink ever recorded, planned or off-menu, across every night — deduped by id, which is
+  // exactly what makes reusing an id link a drink's history. This is what the Library reads and
+  // what off-menu autocomplete matches against.
+  function allKnownItems() {
+    var byId = {};
+    (state.nights || []).forEach(function (n) {
+      (n.cocktails || []).forEach(function (c) {
+        if (!byId[c.id]) byId[c.id] = c;
+      });
+    });
+    (state.spontaneousNights || []).forEach(function (n) {
+      (n.cocktails || []).forEach(function (c) {
+        if (!byId[c.id]) byId[c.id] = c;
+      });
+    });
+    Object.keys(state.customItems).forEach(function (nightId) {
+      state.customItems[nightId].forEach(function (c) {
+        if (!byId[c.id]) byId[c.id] = c;
+      });
+    });
+    return Object.keys(byId).map(function (k) { return byId[k]; });
+  }
+
+  // Every rating ever given for an item, across whichever nights it appeared in — deduped to one
+  // row per person (their most recent). "Usually a hit" and "Divisive" are both defined in terms
+  // of *people*, not rating-instances, so someone who rated the same reused drink on two different
+  // nights must not count twice toward either marker.
+  function ratingsForItem(itemId) {
+    var byFriend = {};
+    Object.keys(state.ratingsByKey).forEach(function (key) {
+      if (key.slice(key.indexOf("|") + 1) !== itemId) return;
+      state.ratingsByKey[key].forEach(function (r) {
+        var existing = byFriend[r.friendId];
+        if (!existing || (r.createdAt || "") > (existing.createdAt || "")) byFriend[r.friendId] = r;
+      });
+    });
+    return Object.keys(byFriend).map(function (k) { return byFriend[k]; });
+  }
+
+  function ratingsForNightItem(nightId, itemId) {
+    return state.ratingsByKey[nightId + "|" + itemId] || [];
+  }
+
+  function myRatingFor(nightId, itemId) {
+    if (!state.friendId) return null;
+    var rows = ratingsForNightItem(nightId, itemId);
+    for (var i = 0; i < rows.length; i++) {
+      if (rows[i].friendId === state.friendId) return rows[i];
+    }
+    return null;
+  }
+
+  // Your own most recent rating of this item, on any night it's appeared on — this is what the
+  // Library sorts by, since the library is about the drink, not any one evening.
+  function myLatestRatingForItem(itemId) {
+    if (!state.friendId) return null;
+    var rows = ratingsForItem(itemId).filter(function (r) { return r.friendId === state.friendId; });
+    if (!rows.length) return null;
+    rows.sort(function (a, b) { return (b.createdAt || "") < (a.createdAt || "") ? -1 : 1; });
+    return rows[0];
+  }
+
+  // Two markers, derived at render time, never stored.
+  //  - Usually a hit: three or more people gave it 4 or 5.
+  //  - Divisive: at least three ratings, someone gave 4 or 5 and someone gave 1 or 2. Wins if both are true.
+  function computeMarker(ratings) {
+    if (!ratings || ratings.length < 3) return null;
+    var hits = 0, low = false, high = false;
+    ratings.forEach(function (r) {
+      if (r.score >= 4) { hits++; high = true; }
+      if (r.score <= 2) low = true;
+    });
+    if (low && high) return "divisive";
+    if (hits >= 3) return "hit";
+    return null;
+  }
+
+  function markerChip(marker) {
+    if (marker === "divisive") return '<span class="chip marker-divisive">Divisive</span>';
+    if (marker === "hit") return '<span class="chip marker-hit">Usually a hit</span>';
+    return "";
+  }
+
+  // "Like this one": near coordinates plus overlapping tags. Rank by euclidean distance on
+  // (strength, sweetSour), require both axes within 3, tie-break on shared tag count, top 5.
+  function likeThisOne(target) {
+    if (typeof target.strength !== "number" || typeof target.sweetSour !== "number") return [];
+    var targetTags = target.tags || [];
+    var candidates = allKnownItems().filter(function (c) {
+      return c.id !== target.id && typeof c.strength === "number" && typeof c.sweetSour === "number";
+    });
+    var scored = candidates.map(function (c) {
+      var ds = Math.abs(c.strength - target.strength);
+      var dw = Math.abs(c.sweetSour - target.sweetSour);
+      var dist = Math.sqrt(ds * ds + dw * dw);
+      var shared = (c.tags || []).filter(function (t) { return targetTags.indexOf(t) > -1; }).length;
+      return { item: c, ds: ds, dw: dw, dist: dist, shared: shared };
+    }).filter(function (s) { return s.ds <= 3 && s.dw <= 3; });
+    scored.sort(function (a, b) {
+      if (a.dist !== b.dist) return a.dist - b.dist;
+      return b.shared - a.shared;
+    });
+    return scored.slice(0, 5).map(function (s) { return s.item; });
+  }
+
   // ---------- rendering pieces ----------
   function renderDog(score) {
-    // score is 1-5. Full dog clipped from the left to score/5 of its width. No score -> outline chip elsewhere, not this control.
     var frac = Math.max(0, Math.min(5, score)) / 5;
     var clipW = Math.round(2037 * frac);
     var clipId = "clip-" + Math.random().toString(36).slice(2);
@@ -1373,6 +1609,38 @@ c-96 8 -148 25 -148 49 0 14 -8 18 -35 18 -33 0 -35 2 -35 35 0 32 2 35 30 35
       '<use href="#sym-dog" stroke="currentColor" stroke-width="40" stroke-linejoin="round"></use>' +
       "</g></svg>"
     );
+  }
+
+  // The interactive five-step control from rating-control-reference.html: five buttons, each
+  // showing the dog AT that step's own fraction (not five copies of one state), the current
+  // pick highlighted. Tapping one writes a rating.
+  function renderRatingSteps(nightId, itemId, currentScore) {
+    var steps = [1, 2, 3, 4, 5].map(function (n) {
+      var on = currentScore === n;
+      return (
+        '<button type="button" class="step' + (on ? " on" : "") + '" data-action="rate" ' +
+        'data-night="' + esc(nightId) + '" data-item="' + esc(itemId) + '" data-score="' + n + '">' +
+        renderDog(n) + '<span class="n">' + n + "</span></button>"
+      );
+    }).join("");
+    return '<div class="scale" role="group" aria-label="Rate 1 to 5">' + steps + "</div>";
+  }
+
+  function ratingHint() {
+    return '<p class="hint">Charmaine’s system: one dog, drawn as far as the drink deserves — a whole dog is top marks.</p>';
+  }
+
+  function everyoneRatingsMarkup(nightId, itemId) {
+    var rows = ratingsForNightItem(nightId, itemId).slice().sort(function (a, b) {
+      return (a.friendName || "").localeCompare(b.friendName || "");
+    });
+    if (!rows.length) return '<p class="screen-note">No one’s rated this tonight yet.</p>';
+    return '<div class="rating-list">' + rows.map(function (r) {
+      return (
+        '<div class="rating-row"><span class="rating-name">' + esc(r.friendName || "Someone") + "</span>" +
+        '<span class="rate">' + renderDog(r.score) + '<span class="lab">' + r.score + " of 5</span></span></div>"
+      );
+    }).join("") + "</div>";
   }
 
   function charChips(c) {
@@ -1388,14 +1656,16 @@ c-96 8 -148 25 -148 49 0 14 -8 18 -35 18 -33 0 -35 2 -35 35 0 32 2 35 30 35
 
   function cocktailCardMeta(c) {
     var out = "";
+    if (c.offMenu) out += '<span class="chip accent">Off-menu' + (c.addedByName ? " · " + esc(c.addedByName) : "") + "</span>";
     if (c.tags && c.tags.length > 1) {
-      // first tag drives the section heading; show the rest as chips
       c.tags.slice(1).forEach(function (t) {
         out += '<span class="chip muted">' + esc(t.replace(/-/g, " ")) + "</span>";
       });
     }
     out += charChips(c);
     if (c.source && c.source.url) out += '<span class="chip accent">Recipe ↗</span>';
+    var marker = computeMarker(ratingsForItem(c.id));
+    if (marker) out += markerChip(marker);
     return out;
   }
 
@@ -1416,7 +1686,7 @@ c-96 8 -148 25 -148 49 0 14 -8 18 -35 18 -33 0 -35 2 -35 35 0 32 2 35 30 35
     var groups = [];
     var current = null;
     cocktails.forEach(function (c) {
-      var key = (c.tags && c.tags[0]) || "more";
+      var key = c.offMenu ? "off-menu" : ((c.tags && c.tags[0]) || "more");
       if (!current || current.key !== key) {
         current = { key: key, items: [] };
         groups.push(current);
@@ -1427,25 +1697,222 @@ c-96 8 -148 25 -148 49 0 14 -8 18 -35 18 -33 0 -35 2 -35 35 0 32 2 35 30 35
   }
 
   function renderNightBody(night) {
-    var cocktails = night.cocktails || [];
-    if (!cocktails.length) {
-      return '<p class="screen-note">No drinks on this menu yet.</p>';
-    }
-    var groups = groupByTag(cocktails);
+    var cocktails = nightCocktails(night);
     var html = "";
-    groups.forEach(function (g) {
-      var heading = TAG_HEADINGS[g.key] || (g.key === "more" ? "" : g.key.replace(/-/g, " "));
-      if (heading) html += '<h2 class="section-heading">' + esc(heading) + "</h2>";
-      html += '<div class="card-list">' + g.items.map(function (c) { return cocktailCard(c, night.id); }).join("") + "</div>";
-    });
+    if (!cocktails.length) {
+      html += '<p class="screen-note">No drinks on this menu yet.</p>';
+    } else {
+      var groups = groupByTag(cocktails);
+      groups.forEach(function (g) {
+        var heading = TAG_HEADINGS[g.key] || (g.key === "more" ? "" : g.key.replace(/-/g, " "));
+        if (heading) html += '<h2 class="section-heading">' + esc(heading) + "</h2>";
+        html += '<div class="card-list">' + g.items.map(function (c) { return cocktailCard(c, night.id); }).join("") + "</div>";
+      });
+    }
+    html += offMenuFormMarkup(night.id);
     return html;
+  }
+
+  function offMenuFormMarkup(nightId) {
+    var options = BASE_OPTIONS.map(function (b) {
+      return '<button type="button" class="base-chip" data-action="pick-base" data-base="' + b + '">' + esc(BASE_LABELS[b]) + "</button>";
+    }).join("");
+    return (
+      '<div class="offmenu-box" data-night="' + esc(nightId) + '">' +
+      '<p class="detail-label">Add an off-menu drink</p>' +
+      '<div class="autocomplete-wrap">' +
+      '<input type="text" class="text-input" data-role="offmenu-name" placeholder="Drink name" autocomplete="off">' +
+      '<div class="autocomplete-list" data-role="offmenu-suggestions" hidden></div>' +
+      "</div>" +
+      '<div class="base-picker" data-role="offmenu-base">' + options + "</div>" +
+      '<input type="url" class="text-input" data-role="offmenu-link" placeholder="Diffords link (optional)">' +
+      '<textarea class="text-input" data-role="offmenu-recipe" rows="2" placeholder="Or jot the recipe (optional)"></textarea>' +
+      '<button type="button" class="primary-btn" data-action="add-offmenu" data-night="' + esc(nightId) + '">Add to tonight</button>' +
+      '<p class="offmenu-status" data-role="offmenu-status"></p>' +
+      "</div>"
+    );
+  }
+
+  // ---------- Supabase wiring ----------
+  function initSupabase() {
+    try {
+      if (window.supabase && typeof window.supabase.createClient === "function") {
+        state.sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      }
+    } catch (e) { state.sb = null; }
+  }
+
+  function ingestRatingRow(row) {
+    var friend = state.friends.filter(function (f) { return f.id === row.friend_id; })[0];
+    var key = row.night_id + "|" + row.item_id;
+    var list = state.ratingsByKey[key] || [];
+    list = list.filter(function (r) { return r.friendId !== row.friend_id; });
+    list.push({ friendId: row.friend_id, friendName: friend ? friend.name : null, score: row.score, createdAt: row.created_at });
+    state.ratingsByKey[key] = list;
+  }
+
+  function ingestCustomItemRow(row) {
+    var addedBy = state.friends.filter(function (f) { return f.id === row.added_by; })[0];
+    var item = {
+      id: row.id,
+      name: row.name,
+      description: row.description || row.recipe || null,
+      recipe: row.recipe || null,
+      base: row.base || null,
+      tags: row.tags || [],
+      strength: typeof row.strength === "number" ? row.strength : null,
+      sweetSour: typeof row.sweet_sour === "number" ? row.sweet_sour : null,
+      source: row.source_url ? { name: "Difford's Guide", url: row.source_url } : null,
+      addedByName: addedBy ? addedBy.name : null
+    };
+    var list = state.customItems[row.night_id] || [];
+    list = list.filter(function (c) { return c.id !== row.id; });
+    list.push(item);
+    state.customItems[row.night_id] = list;
+  }
+
+  function removeCustomItemRow(nightId, itemId) {
+    var list = state.customItems[nightId] || [];
+    state.customItems[nightId] = list.filter(function (c) { return c.id !== itemId; });
+  }
+
+  function ingestNightRow(row) {
+    var existing = findSpontaneousNight(row.id);
+    if (existing) { existing.date = row.date; existing.title = row.title; return; }
+    state.spontaneousNights.push({ id: row.id, date: row.date, title: row.title || "Spontaneous night", cocktails: [], spontaneous: true });
+  }
+
+  function removeNightRow(id) {
+    state.spontaneousNights = state.spontaneousNights.filter(function (n) { return n.id !== id; });
+  }
+
+  // Non-blocking: the menu already rendered from data.json by the time this resolves, and every
+  // call here is caught so a dropped connection never surfaces as a JS error — only the ratings
+  // and off-menu extras go quiet.
+  function loadDynamicData() {
+    if (!state.sb) { state.dbReady = true; return Promise.resolve(); }
+    var relevantNightIds = allNightsForTonight().map(function (n) { return n.id; });
+
+    return state.sb.from("friends").select("id,name,emoji").then(function (res) {
+      state.friends = (res && res.data) || [];
+    }).catch(function () {}).then(function () {
+      return state.sb.from("nights").select("id,date,title").then(function (res) {
+        ((res && res.data) || []).forEach(ingestNightRow);
+      }).catch(function () {});
+    }).then(function () {
+      return state.sb.from("custom_items").select("*").then(function (res) {
+        ((res && res.data) || []).forEach(ingestCustomItemRow);
+      }).catch(function () {});
+    }).then(function () {
+      return state.sb.from("ratings").select("night_id,item_id,friend_id,score,created_at").then(function (res) {
+        ((res && res.data) || []).forEach(ingestRatingRow);
+      }).catch(function () {});
+    }).then(function () {
+      state.dbReady = true;
+      route();
+    }).catch(function () { state.dbReady = true; });
+  }
+
+  function subscribeRealtime() {
+    if (!state.sb || typeof state.sb.channel !== "function") return;
+    try {
+      state.sb.channel("dieleer-live")
+        .on("postgres_changes", { event: "*", schema: "public", table: "ratings" }, function (payload) {
+          if (payload.eventType === "DELETE") return; // ratings are never deleted
+          ingestRatingRow(payload.new);
+          route();
+        })
+        .on("postgres_changes", { event: "*", schema: "public", table: "custom_items" }, function (payload) {
+          if (payload.eventType === "DELETE") removeCustomItemRow(payload.old.night_id, payload.old.id);
+          else ingestCustomItemRow(payload.new);
+          route();
+        })
+        .on("postgres_changes", { event: "*", schema: "public", table: "nights" }, function (payload) {
+          if (payload.eventType === "DELETE") removeNightRow(payload.old.id);
+          else ingestNightRow(payload.new);
+          route();
+        })
+        .on("postgres_changes", { event: "*", schema: "public", table: "friends" }, function (payload) {
+          if (payload.eventType !== "DELETE") {
+            var i = state.friends.findIndex(function (f) { return f.id === payload.new.id; });
+            if (i > -1) state.friends[i] = payload.new; else state.friends.push(payload.new);
+            route();
+          }
+        })
+        .subscribe();
+    } catch (e) { /* realtime is a nice-to-have; the app already works without it */ }
+  }
+
+  function submitRating(nightId, itemId, score) {
+    if (!state.friendId) {
+      app.querySelector(".name-needed") && app.querySelector(".name-needed").scrollIntoView({ block: "center" });
+      return;
+    }
+    // optimistic: show it immediately, reconcile (or quietly drop) once the write settles
+    ingestRatingRow({ night_id: nightId, item_id: itemId, friend_id: state.friendId, score: score, created_at: new Date().toISOString() });
+    route();
+    if (!state.sb) return;
+    state.sb.from("ratings")
+      .upsert({ night_id: nightId, item_id: itemId, friend_id: state.friendId, score: score }, { onConflict: "night_id,item_id,friend_id" })
+      .then(function () {})
+      .catch(function () {});
+  }
+
+  function addFriend(name) {
+    name = (name || "").trim();
+    if (!name || !state.sb) return;
+    state.sb.from("friends").insert({ name: name }).select().then(function (res) {
+      var row = res && res.data && res.data[0];
+      if (row) {
+        state.friends.push(row);
+        state.friendId = row.id;
+        lsSet(LS_FRIEND, row.id);
+        route();
+      }
+    }).catch(function () {});
+  }
+
+  function addOffMenuItem(nightId, name, base, link, recipe) {
+    name = (name || "").trim();
+    if (!name) return;
+    var existing = allKnownItems().filter(function (c) { return c.name.trim().toLowerCase() === name.toLowerCase(); })[0];
+    var id = existing ? existing.id : slugify(name);
+    var row = {
+      id: id, night_id: nightId, name: existing ? existing.name : name,
+      added_by: state.friendId, base: base || null,
+      recipe: recipe || null, source_url: link || null
+    };
+    ingestCustomItemRow(Object.assign({}, row, { sweet_sour: null }));
+    route();
+    if (!state.sb) return;
+    state.sb.from("custom_items").insert(row).then(function () {}).catch(function () {});
+  }
+
+  function removeOffMenuItem(nightId, itemId) {
+    removeCustomItemRow(nightId, itemId);
+    route();
+    if (!state.sb) return;
+    state.sb.from("custom_items").delete().eq("night_id", nightId).eq("id", itemId).then(function () {}).catch(function () {});
+  }
+
+  function startTonight(title) {
+    var id = todayYMD();
+    var suffix = 2;
+    while (findNight(id)) { id = todayYMD() + "-" + suffix; suffix++; }
+    ingestNightRow({ id: id, date: todayYMD(), title: title || null });
+    location.hash = "#/night/" + encodeURIComponent(id);
+    if (!state.sb) { route(); return; }
+    state.sb.from("nights").insert({ id: id, date: todayYMD(), title: title || null, created_by: state.friendId })
+      .then(function () {}).catch(function () {});
   }
 
   // ---------- screens ----------
   function screenTonight() {
-    var nights = allNightsSorted();
+    var nights = allNightsForTonight();
+    var today = nights.filter(function (n) { return dayDiff(parseYMD(n.date), todayLocal()) === 0; })[0];
+    if (today) return goToNight(today.id, true);
     if (!nights.length) return screenEmptyNights();
-    return goToNight(nights[0].id, true);
+    return goToNight(nights[0].id, true, true);
   }
 
   function screenNightUnknown() {
@@ -1462,11 +1929,22 @@ c-96 8 -148 25 -148 49 0 14 -8 18 -35 18 -33 0 -35 2 -35 35 0 32 2 35 30 35
   function screenEmptyNights() {
     app.innerHTML =
       '<div class="wrap"><div class="empty-state"><h2>No nights yet</h2>' +
-      "<p>Once a menu is published it’ll show up here.</p></div></div>";
+      "<p>Once a menu is published it’ll show up here.</p></div>" +
+      startNightMarkup() + "</div>";
     setActiveTab("tonight");
   }
 
-  function goToNight(nightId, isTonightTab) {
+  function startNightMarkup() {
+    return (
+      '<div class="start-night-box">' +
+      '<p class="screen-note">Nothing’s on for today. Having one anyway?</p>' +
+      '<input type="text" class="text-input" data-role="start-night-title" placeholder="Name it, or leave blank">' +
+      '<button type="button" class="primary-btn" data-action="start-night">Start a night</button>' +
+      "</div>"
+    );
+  }
+
+  function goToNight(nightId, isTonightTab, offerStart) {
     var night = findNight(nightId);
     if (!night) return screenNightUnknown();
     var kicker = nightKicker(night.date);
@@ -1476,10 +1954,14 @@ c-96 8 -148 25 -148 49 0 14 -8 18 -35 18 -33 0 -35 2 -35 35 0 32 2 35 30 35
       '<h1 class="screen-title">' + esc(night.title || "Untitled night") + "</h1>" +
       (night.note ? '<p class="screen-note">' + esc(night.note) + "</p>" : "") +
       renderNightBody(night) +
+      (offerStart ? startNightMarkup() : "") +
       "</div>";
     setActiveTab(isTonightTab ? "tonight" : "nights");
   }
 
+  // Archive markup — reads state.nights (planned, from data.json) ONLY. A spontaneous night is
+  // never listed here, even once it's been rated: the archive is for the evenings Andy deliberately
+  // plans and names, not a log of every time someone had a drink.
   function screenNightsListMarkup() {
     var nights = allNightsSorted();
     if (!nights.length) {
@@ -1509,7 +1991,7 @@ c-96 8 -148 25 -148 49 0 14 -8 18 -35 18 -33 0 -35 2 -35 35 0 32 2 35 30 35
       '<div class="wrap">' +
       '<span class="screen-kicker">Archive</span>' +
       '<h1 class="screen-title">Past &amp; upcoming nights</h1>' +
-      '<p class="screen-note">Every night ever planned, newest first.</p>' +
+      '<p class="screen-note">The nights Andy’s planned and named, newest first — a spontaneous night doesn’t join this list.</p>' +
       screenNightsListMarkup() +
       "</div>";
     setActiveTab("nights");
@@ -1517,19 +1999,25 @@ c-96 8 -148 25 -148 49 0 14 -8 18 -35 18 -33 0 -35 2 -35 35 0 32 2 35 30 35
 
   function screenDrink(nightId, drinkId) {
     var night = findNight(nightId);
-    var cocktail = night ? (night.cocktails || []).find(function (c) { return c.id === drinkId; }) : null;
+    var cocktail = night ? nightCocktails(night).filter(function (c) { return c.id === drinkId; })[0] : null;
     if (!night || !cocktail) {
-      // Fall back to the night if we have it, otherwise the archive. Never a blank screen.
       return night ? goToNight(nightId, false) : screenNightUnknown();
     }
     var base = cocktail.base && BASE_LABELS[cocktail.base] ? BASE_LABELS[cocktail.base] : cocktail.base;
+    var marker = computeMarker(ratingsForItem(cocktail.id));
+    var mine = myRatingFor(nightId, cocktail.id);
+    var canRemove = cocktail.offMenu && ratingsForNightItem(nightId, cocktail.id).length === 0;
+    var similar = likeThisOne(cocktail);
     var html =
       '<div class="wrap">' +
       '<a class="back-link" href="#/night/' + esc(nightId) + '">← ' + esc(night.title || "Back") + "</a>" +
       '<h1 class="detail-name">' + esc(cocktail.name) + "</h1>" +
       (cocktail.description ? '<p class="detail-desc">' + esc(cocktail.description) + "</p>" : "") +
+      (cocktail.recipe && !cocktail.description ? '<p class="detail-desc">' + esc(cocktail.recipe) + "</p>" : "") +
       '<div class="card-meta" style="margin-bottom:20px">' +
       (base ? '<span class="chip">' + esc(base) + "</span>" : "") +
+      (cocktail.offMenu ? '<span class="chip accent">Off-menu' + (cocktail.addedByName ? " · added by " + esc(cocktail.addedByName) : "") + "</span>" : "") +
+      (marker ? markerChip(marker) : "") +
       (cocktail.tags || [])
         .map(function (t) { return '<span class="chip muted">' + esc(t.replace(/-/g, " ")) + "</span>"; })
         .join("") +
@@ -1542,7 +2030,7 @@ c-96 8 -148 25 -148 49 0 14 -8 18 -35 18 -33 0 -35 2 -35 35 0 32 2 35 30 35
         ? '<div class="char-stat"><div class="num">' + esc(cocktail.sweetSour) + "/10</div><div class=\"label\">Sweet–sour</div></div>"
         : "") +
       (typeof cocktail.strength !== "number" && typeof cocktail.sweetSour !== "number"
-        ? '<span class="chip muted">No details yet — not linked to Difford’s</span>'
+        ? '<span class="chip muted">No details yet — enrichment lands by morning, once it’s linked</span>'
         : "") +
       "</div></div>" +
       (cocktail.source && cocktail.source.url
@@ -1551,18 +2039,161 @@ c-96 8 -148 25 -148 49 0 14 -8 18 -35 18 -33 0 -35 2 -35 35 0 32 2 35 30 35
           esc(cocktail.source.name || "View recipe") + " ↗</a></div>"
         : "") +
       '<div class="detail-section"><p class="detail-label">Rate this</p>' +
-      '<p class="phase2-note">Live ratings turn on once the database side of the app is built. For now, this is the menu and the notes.</p>' +
+      (state.friendId ? "" : '<p class="screen-note name-needed">Pick your name on the <a href="#/me">Me</a> tab first.</p>') +
+      ratingHint() +
+      renderRatingSteps(nightId, cocktail.id, mine ? mine.score : null) +
       "</div>" +
+      '<div class="detail-section"><p class="detail-label">Everyone’s ratings tonight</p>' + everyoneRatingsMarkup(nightId, cocktail.id) + "</div>" +
+      (similar.length
+        ? '<div class="detail-section"><p class="detail-label">Like this one</p><div class="card-list">' +
+          similar.map(function (s) { return '<a class="night-row" href="#/night/' + esc(nightId) + "/drink/" + esc(s.id) + '"><h3>' + esc(s.name) + "</h3></a>"; }).join("") +
+          "</div></div>"
+        : "") +
+      (canRemove ? '<button type="button" class="text-btn" data-action="remove-offmenu" data-night="' + esc(nightId) + '" data-item="' + esc(cocktail.id) + '">Remove this off-menu entry</button>' : "") +
       "</div>";
     app.innerHTML = html;
     setActiveTab("tonight");
   }
 
-  function screenStub(title, body) {
+  // ---------- Library ----------
+  function screenLibrary() {
+    var items = allKnownItems();
+    var q = state.libraryQuery.trim().toLowerCase();
+    if (q) {
+      items = items.filter(function (c) {
+        var hay = [c.name, c.description, c.recipe].concat(c.tags || []).filter(Boolean).join(" ").toLowerCase();
+        return hay.indexOf(q) > -1;
+      });
+    }
+    items = items.filter(function (c) {
+      var s = typeof c.strength === "number" ? c.strength : null;
+      var w = typeof c.sweetSour === "number" ? c.sweetSour : null;
+      if (s !== null && (s < state.libraryMinStrength || s > state.libraryMaxStrength)) return false;
+      if (w !== null && (w < state.libraryMinSweet || w > state.libraryMaxSweet)) return false;
+      return true;
+    });
+
+    items = items.map(function (c) {
+      var mine = myLatestRatingForItem(c.id);
+      return { item: c, myScore: mine ? mine.score : -1 };
+    }).sort(function (a, b) { return b.myScore - a.myScore; });
+
+    var rows = items.map(function (row) {
+      var c = row.item;
+      var group = ratingsForItem(c.id);
+      var groupNote = "";
+      if (group.length) {
+        var hits = group.filter(function (r) { return r.score >= 4; }).length;
+        groupNote = '<p class="group-note">' + group.length + (group.length === 1 ? " rating" : " ratings") +
+          (hits ? " · " + hits + " gave it 4 or up" : "") + "</p>";
+      }
+      var mineChip = row.myScore > -1
+        ? '<span class="rate">' + renderDog(row.myScore) + '<span class="lab">' + row.myScore + " of 5</span></span>"
+        : '<span class="chip muted">Not rated yet</span>';
+      return (
+        '<a class="card" href="#/library/drink/' + esc(c.id) + '">' +
+        '<div class="card-top"><span class="card-name">' + esc(c.name) + "</span>" + mineChip + "</div>" +
+        (c.description ? '<p class="card-desc">' + esc(c.description) + "</p>" : "") +
+        '<div class="card-meta">' + cocktailCardMeta(c) + "</div>" + groupNote +
+        "</a>"
+      );
+    }).join("");
+
     app.innerHTML =
-      '<div class="wrap"><span class="screen-kicker">Coming soon</span>' +
-      '<h1 class="screen-title">' + esc(title) + "</h1>" +
-      '<p class="screen-note">' + body + "</p></div>";
+      '<div class="wrap">' +
+      '<span class="screen-kicker">Library</span>' +
+      '<h1 class="screen-title">Every drink, sorted by you</h1>' +
+      '<p class="screen-note">Highest of your own ratings first. Group data’s here too, quietly — never a leaderboard.</p>' +
+      '<input type="search" class="text-input" data-role="library-search" placeholder="Search name, tag, note…" value="' + esc(state.libraryQuery) + '">' +
+      '<details class="filters"><summary>Character filters</summary>' +
+      '<label>Strength <input type="number" min="0" max="10" data-role="lib-min-strength" value="' + state.libraryMinStrength + '"> to <input type="number" min="0" max="10" data-role="lib-max-strength" value="' + state.libraryMaxStrength + '"></label>' +
+      '<label>Sweet–sour <input type="number" min="0" max="10" data-role="lib-min-sweet" value="' + state.libraryMinSweet + '"> to <input type="number" min="0" max="10" data-role="lib-max-sweet" value="' + state.libraryMaxSweet + '"></label>' +
+      "</details>" +
+      (rows ? '<div class="card-list" style="margin-top:14px">' + rows + "</div>" : '<p class="screen-note">Nothing matches.</p>') +
+      "</div>";
+    setActiveTab("library");
+  }
+
+  function screenLibraryDrink(itemId) {
+    var item = allKnownItems().filter(function (c) { return c.id === itemId; })[0];
+    if (!item) { screenLibrary(); return; }
+    // Reuse the drink-detail rendering against whichever night it most recently appeared on.
+    var owningNight = allNightsForTonight().concat(allNightsSorted()).filter(function (n) {
+      return nightCocktails(n).some(function (c) { return c.id === itemId; });
+    })[0];
+    if (owningNight) return screenDrink(owningNight.id, itemId);
+    screenLibrary();
+  }
+
+  // ---------- Me ----------
+  function namePickerMarkup() {
+    if (state.friendId) {
+      var me = state.friends.filter(function (f) { return f.id === state.friendId; })[0];
+      return (
+        '<p class="screen-note">You’re rating as <strong>' + esc(me ? me.name : "you") + "</strong>. " +
+        '<button type="button" class="text-btn" data-action="switch-name">Not you?</button></p>'
+      );
+    }
+    var list = state.friends.map(function (f) {
+      return '<button type="button" class="base-chip" data-action="pick-friend" data-friend="' + esc(f.id) + '">' + esc(f.name) + "</button>";
+    }).join("");
+    return (
+      '<div class="name-picker">' +
+      (list ? '<div class="base-picker">' + list + "</div>" : "") +
+      '<input type="text" class="text-input" data-role="new-friend-name" placeholder="Or add your name">' +
+      '<button type="button" class="primary-btn" data-action="add-friend">That’s me</button>' +
+      "</div>"
+    );
+  }
+
+  function screenMe() {
+    if (!state.friendId) {
+      app.innerHTML =
+        '<div class="wrap"><span class="screen-kicker">Me</span><h1 class="screen-title">Who’s rating?</h1>' +
+        '<p class="screen-note">No logins here — pick your name from the list, or add it if you’re new.</p>' +
+        namePickerMarkup() + "</div>";
+      setActiveTab("me");
+      return;
+    }
+    var mine = [];
+    Object.keys(state.ratingsByKey).forEach(function (key) {
+      state.ratingsByKey[key].forEach(function (r) {
+        if (r.friendId !== state.friendId) return;
+        var pipe = key.indexOf("|");
+        var nightId = key.slice(0, pipe), itemId = key.slice(pipe + 1);
+        var item = allKnownItems().filter(function (c) { return c.id === itemId; })[0];
+        var night = findNight(nightId);
+        mine.push({ item: item, night: night, score: r.score, createdAt: r.createdAt || "" });
+      });
+    });
+    mine.sort(function (a, b) { return b.createdAt < a.createdAt ? -1 : 1; });
+    var filter = state.meFilter;
+    var filtered = mine.filter(function (m) {
+      if (filter === "5s") return m.score === 5;
+      if (filter === "4plus") return m.score >= 4;
+      return true;
+    });
+    var rows = filtered.map(function (m) {
+      if (!m.item) return "";
+      return (
+        '<div class="card"><div class="card-top"><span class="card-name">' + esc(m.item.name) + "</span>" +
+        '<span class="rate">' + renderDog(m.score) + '<span class="lab">' + m.score + " of 5</span></span></div>" +
+        (m.night ? '<p class="card-desc">' + esc(m.night.title || "") + "</p>" : "") +
+        "</div>"
+      );
+    }).join("");
+    app.innerHTML =
+      '<div class="wrap"><span class="screen-kicker">Me</span><h1 class="screen-title">What you’ve liked</h1>' +
+      namePickerMarkup() +
+      '<div class="filter-row">' +
+      ["all", "4plus", "5s"].map(function (f) {
+        var label = f === "all" ? "All" : f === "4plus" ? "4 and up" : "5s only";
+        return '<button type="button" class="filter-chip' + (filter === f ? " on" : "") + '" data-action="me-filter" data-filter="' + f + '">' + label + "</button>";
+      }).join("") +
+      "</div>" +
+      (rows ? '<div class="card-list">' + rows + "</div>" : '<p class="screen-note">Nothing here yet at this filter.</p>') +
+      "</div>";
+    setActiveTab("me");
   }
 
   function setActiveTab(name) {
@@ -1588,20 +2219,99 @@ c-96 8 -148 25 -148 49 0 14 -8 18 -35 18 -33 0 -35 2 -35 35 0 32 2 35 30 35
       return screenDrink(decodeURIComponent(parts[1]), decodeURIComponent(parts[3]));
     }
     if (parts[0] === "night" && parts[1]) return goToNight(decodeURIComponent(parts[1]), false);
-    if (parts[0] === "library") {
-      setActiveTab("library");
-      return screenStub("Library", "Every drink ever recorded, searchable and sorted by your own ratings. Arrives with the database in Phase 2.");
-    }
-    if (parts[0] === "me") {
-      setActiveTab("me");
-      return screenStub("Me", "Pick your name and see your own ratings across every night. Arrives with the database in Phase 2.");
-    }
-    // Unknown route: never a blank screen.
+    if (parts[0] === "library" && parts[1] === "drink" && parts[2]) return screenLibraryDrink(decodeURIComponent(parts[2]));
+    if (parts[0] === "library") return screenLibrary();
+    if (parts[0] === "me") return screenMe();
     return screenTonight();
   }
 
+  // ---------- input handling (event delegation — content is re-rendered wholesale each route) ----------
+  var pendingBase = null;
+
+  document.addEventListener("click", function (e) {
+    var el = e.target.closest("[data-action]");
+    if (!el) return;
+    var action = el.getAttribute("data-action");
+    if (action === "rate") {
+      submitRating(el.getAttribute("data-night"), el.getAttribute("data-item"), Number(el.getAttribute("data-score")));
+    } else if (action === "pick-friend") {
+      state.friendId = el.getAttribute("data-friend");
+      lsSet(LS_FRIEND, state.friendId);
+      route();
+    } else if (action === "switch-name") {
+      state.friendId = null;
+      lsSet(LS_FRIEND, "");
+      route();
+    } else if (action === "add-friend") {
+      var input = app.querySelector('[data-role="new-friend-name"]');
+      addFriend(input ? input.value : "");
+    } else if (action === "me-filter") {
+      state.meFilter = el.getAttribute("data-filter");
+      lsSet(LS_ME_FILTER, state.meFilter);
+      route();
+    } else if (action === "pick-base") {
+      pendingBase = el.getAttribute("data-base");
+      app.querySelectorAll(".base-chip[data-action='pick-base']").forEach(function (b) { b.classList.toggle("on", b === el); });
+    } else if (action === "add-offmenu") {
+      var box = el.closest(".offmenu-box");
+      var nightId = el.getAttribute("data-night");
+      var name = box.querySelector('[data-role="offmenu-name"]').value;
+      var link = box.querySelector('[data-role="offmenu-link"]').value;
+      var recipe = box.querySelector('[data-role="offmenu-recipe"]').value;
+      if (!name.trim()) return;
+      addOffMenuItem(nightId, name, pendingBase, link, recipe);
+      pendingBase = null;
+    } else if (action === "remove-offmenu") {
+      removeOffMenuItem(el.getAttribute("data-night"), el.getAttribute("data-item"));
+    } else if (action === "start-night") {
+      var titleInput = app.querySelector('[data-role="start-night-title"]');
+      startTonight(titleInput ? titleInput.value : "");
+    }
+  });
+
+  document.addEventListener("input", function (e) {
+    if (e.target.matches('[data-role="library-search"]')) {
+      state.libraryQuery = e.target.value;
+      screenLibrary();
+      var again = app.querySelector('[data-role="library-search"]');
+      if (again) { again.focus(); again.setSelectionRange(again.value.length, again.value.length); }
+    } else if (e.target.matches('[data-role="lib-min-strength"]')) {
+      state.libraryMinStrength = Number(e.target.value) || 0; screenLibrary();
+    } else if (e.target.matches('[data-role="lib-max-strength"]')) {
+      state.libraryMaxStrength = Number(e.target.value) || 10; screenLibrary();
+    } else if (e.target.matches('[data-role="lib-min-sweet"]')) {
+      state.libraryMinSweet = Number(e.target.value) || 0; screenLibrary();
+    } else if (e.target.matches('[data-role="lib-max-sweet"]')) {
+      state.libraryMaxSweet = Number(e.target.value) || 10; screenLibrary();
+    } else if (e.target.matches('[data-role="offmenu-name"]')) {
+      var val = e.target.value.trim().toLowerCase();
+      var list = app.querySelector('[data-role="offmenu-suggestions"]');
+      if (!list) return;
+      if (!val) { list.hidden = true; list.innerHTML = ""; return; }
+      var matches = allKnownItems().filter(function (c) { return c.name.toLowerCase().indexOf(val) > -1; }).slice(0, 6);
+      if (!matches.length) { list.hidden = true; list.innerHTML = ""; return; }
+      list.hidden = false;
+      list.innerHTML = matches.map(function (c) {
+        return '<button type="button" class="autocomplete-item" data-name="' + esc(c.name) + '">' + esc(c.name) + "</button>";
+      }).join("");
+    }
+  });
+
+  document.addEventListener("click", function (e) {
+    var item = e.target.closest(".autocomplete-item");
+    if (!item) return;
+    var box = item.closest(".offmenu-box");
+    var nameInput = box.querySelector('[data-role="offmenu-name"]');
+    nameInput.value = item.getAttribute("data-name");
+    var list = box.querySelector('[data-role="offmenu-suggestions"]');
+    list.hidden = true; list.innerHTML = "";
+  });
+
   // ---------- boot ----------
   function boot() {
+    state.friendId = lsGet(LS_FRIEND, null) || null;
+    state.meFilter = lsGet(LS_ME_FILTER, "4plus");
+
     fetch("./data.json?v=" + Date.now())
       .then(function (r) {
         if (!r.ok) throw new Error("bad response");
@@ -1612,6 +2322,8 @@ c-96 8 -148 25 -148 49 0 14 -8 18 -35 18 -33 0 -35 2 -35 35 0 32 2 35 30 35
         state.updated = data.updated || null;
         updatedLine.textContent = state.updated ? "Menu updated " + formatDate(state.updated) : "";
         route();
+        initSupabase();
+        loadDynamicData().then(subscribeRealtime);
       })
       .catch(function () {
         state.error = true;
@@ -1626,6 +2338,10 @@ c-96 8 -148 25 -148 49 0 14 -8 18 -35 18 -33 0 -35 2 -35 35 0 32 2 35 30 35
   }
 
   boot();
+
+  // Exposed purely so the smoke test can exercise pure logic (markers, distance, slugs) without
+  // needing a real Supabase connection, which jsdom can't provide. Harmless in production.
+  window.__dieleer = { computeMarker: computeMarker, likeThisOne: likeThisOne, slugify: slugify, state: state };
 })();
 </script>
 </body>
