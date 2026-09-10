@@ -1858,9 +1858,16 @@ c-96 8 -148 25 -148 49 0 14 -8 18 -35 18 -33 0 -35 2 -35 35 0 32 2 35 30 35
       .catch(function () {});
   }
 
+  function setFriendStatus(msg) {
+    var el = app.querySelector('[data-role="friend-status"]');
+    if (el) el.textContent = msg;
+  }
+
   function addFriend(name) {
     name = (name || "").trim();
-    if (!name || !state.sb) return;
+    if (!name) { setFriendStatus("Type your name first."); return; }
+    if (!state.sb) { setFriendStatus("Can’t reach the server right now — check your connection and try again."); return; }
+    setFriendStatus("Adding…");
     state.sb.from("friends").insert({ name: name }).select().then(function (res) {
       var row = res && res.data && res.data[0];
       if (row) {
@@ -1868,8 +1875,12 @@ c-96 8 -148 25 -148 49 0 14 -8 18 -35 18 -33 0 -35 2 -35 35 0 32 2 35 30 35
         state.friendId = row.id;
         lsSet(LS_FRIEND, row.id);
         route();
+      } else {
+        setFriendStatus("Couldn’t add your name — try again.");
       }
-    }).catch(function () {});
+    }).catch(function () {
+      setFriendStatus("Couldn’t reach the server — check your connection and try again.");
+    });
   }
 
   function addOffMenuItem(nightId, name, base, link, recipe) {
@@ -2142,6 +2153,7 @@ c-96 8 -148 25 -148 49 0 14 -8 18 -35 18 -33 0 -35 2 -35 35 0 32 2 35 30 35
       (list ? '<div class="base-picker">' + list + "</div>" : "") +
       '<input type="text" class="text-input" data-role="new-friend-name" placeholder="Or add your name">' +
       '<button type="button" class="primary-btn" data-action="add-friend">That’s me</button>' +
+      '<p class="offmenu-status" data-role="friend-status"></p>' +
       "</div>"
     );
   }
