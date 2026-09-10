@@ -10,11 +10,17 @@
         {
           "id": "dry-martini-2-1",
           "name": "2:1 Dry Martini",
-          "description": "60ml gin, 30ml dry vermouth. Stirred, strained, lemon twist or olive.",
+          "description": "60ml gin, 30ml dry vermouth.",
           "base": "gin",
           "tags": [
             "starter"
-          ]
+          ],
+          "strength": 4,
+          "sweetSour": 4,
+          "source": {
+            "name": "Difford's Guide",
+            "url": "https://www.diffordsguide.com/cocktails/recipe/2075/dry-martini-21-ratio-wet"
+          }
         },
         {
           "id": "dry-martini-montgomery-15-1",
@@ -40,12 +46,14 @@
           "source": {
             "name": "Difford's Guide",
             "url": "https://www.diffordsguide.com/cocktails/recipe/1392/negroni-cocktail"
-          }
+          },
+          "strength": 4,
+          "sweetSour": 5
         },
         {
           "id": "negroni-select",
           "name": "Negroni with Select",
-          "description": "The Venetian classic: 30ml gin, 30ml Select Aperitivo, 30ml sweet vermouth. Select is the Venice-born bitter liqueur (1920) some regard as the original Negroni-family amaro.",
+          "description": "The Venetian classic: 30ml gin, 30ml Select Aperitivo, 30ml sweet vermouth. Select is the Venice-born bitter liqueur (1920) some regard as the original Negroni-family amaro; lighter and more floral than Campari.",
           "base": "gin",
           "tags": [
             "the-negroni"
@@ -54,7 +62,7 @@
         {
           "id": "negroni-carpano-antica",
           "name": "Negroni with Carpano Antica",
-          "description": "30ml gin, 30ml Campari, 30ml Carpano Antica Formula vermouth in place of standard sweet vermouth.",
+          "description": "30ml gin, 30ml Campari, 30ml Carpano Antica Formula vermouth in place of standard sweet vermouth. Carpano Antica is a richer, vanilla-forward premium vermouth.",
           "base": "gin",
           "tags": [
             "the-negroni"
@@ -66,18 +74,19 @@
           "description": "Rum swap: 30ml overproof aged pot-still rum (high-ester Jamaican style, 4–6yrs), 30ml sweet vermouth, 30ml Campari.",
           "base": "rum",
           "tags": [
-            "close-variant",
-            "locked-in"
+            "close-variant"
           ],
           "source": {
             "name": "Difford's Guide",
             "url": "https://www.diffordsguide.com/cocktails/recipe/3475/kingston-negroni"
-          }
+          },
+          "strength": 9,
+          "sweetSour": 6
         },
         {
           "id": "negroni-sbagliato",
           "name": "Negroni Sbagliato",
-          "description": "Campari and sweet vermouth, with a splash of prosecco instead of gin.",
+          "description": "30ml Campari, 30ml sweet vermouth, 60ml prosecco instead of gin.",
           "base": "other",
           "tags": [
             "close-variant"
@@ -85,7 +94,9 @@
           "source": {
             "name": "Difford's Guide",
             "url": "https://www.diffordsguide.com/cocktails/recipe/2515/negroni-sbagliato"
-          }
+          },
+          "strength": 3,
+          "sweetSour": 3
         },
         {
           "id": "witches-negroni",
@@ -128,7 +139,9 @@
           "source": {
             "name": "Difford's Guide",
             "url": "https://www.diffordsguide.com/cocktails/recipe/11460/eeyores-requiem"
-          }
+          },
+          "strength": 6,
+          "sweetSour": 7
         },
         {
           "id": "comte-de-sureau",
@@ -163,7 +176,7 @@
         {
           "id": "blue-negroni",
           "name": "Blue Negroni",
-          "description": "30ml Old Tom gin, 20ml Luxardo Bitter Bianco, 20ml bianco vermouth, 10ml dry vermouth, 10ml blue curaçao, 3 drops saline.",
+          "description": "30ml Old Tom gin, 20ml Luxardo Bitter Bianco, 20ml bianco vermouth, 10ml dry vermouth, 10ml blue curaçao, 3 drops saline solution.",
           "base": "gin",
           "tags": [
             "wild"
@@ -178,7 +191,7 @@
         {
           "id": "end-of-the-road",
           "name": "End of the Road",
-          "description": "30ml peated single malt whisky, 30ml Green Chartreuse, 30ml Campari. No vermouth. Served up in a chilled coupe. Diffords calls it \"Negroni-esque\" rather than a formal variant.",
+          "description": "30ml peated single malt whisky, 30ml Green Chartreuse, 30ml Campari. No vermouth. Served up in a chilled coupe. Diffords calls it \"punchy, Negroni-esque\" rather than a formal variant.",
           "base": "whisky",
           "tags": [
             "wild"
@@ -186,7 +199,9 @@
           "source": {
             "name": "Difford's Guide",
             "url": "https://www.diffordsguide.com/cocktails/recipe/38798/end-of-the-road"
-          }
+          },
+          "strength": 9,
+          "sweetSour": 7
         },
         {
           "id": "chocolate-negroni",
@@ -199,12 +214,14 @@
           "source": {
             "name": "Difford's Guide",
             "url": "https://www.diffordsguide.com/cocktails/recipe/5852/chocolate-negroni"
-          }
+          },
+          "strength": 7,
+          "sweetSour": 6
         },
         {
           "id": "sour-cherry-negroni",
           "name": "Sour Cherry Negroni",
-          "description": "30ml gin, 22.5ml Campari, 22.5ml sweet vermouth (Martini & Rossi Riserva Speciale Rubino), 15ml crème de noyaux, 5ml acid-adjusted cherry juice, dash of saline solution (10:1 water to salt). Stirred, strained over a large cube, brandied cherry garnish. From Hawksmoor NYC.",
+          "description": "30ml gin, 22.5ml Campari, 22.5ml sweet vermouth (Martini & Rossi Riserva Speciale Rubino), 15ml crème de noyaux, 5ml acid-adjusted cherry juice, dash of saline solution (10:1 water to salt). From Hawksmoor NYC.",
           "base": "gin",
           "tags": [
             "dessert"
