@@ -1,9 +1,10 @@
 name: Keep Supabase awake
 
-# Supabase pauses a free-tier project after a week with no API activity, and cocktail nights are
-# monthly — the project would be asleep every single time without this. Daily, not weekly:
-# Supabase's own docs ask for "a few requests each day over the previous week". Andy never sees
-# this run; it's free forever on GitHub's schedule.
+# Supabase pauses a free-tier project after a week of insufficient API activity, and cocktail
+# nights are monthly. One request a day wasn't enough: on 2026-10-08 Supabase warned the project
+# was scheduled to pause even though this job had run green daily. So each run now makes a spread
+# of real requests — a read and a count on every table, plus the auth health check.
+# Fails loudly on ANY non-200, not just 5xx: a 401/403 (e.g. a missing GRANT) used to pass silently.
 
 on:
   schedule:
@@ -14,13 +15,22 @@ jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping the Die Leer/e database
+      - name: Make a spread of requests to the Die Leer/e database
         run: |
-          code=$(curl -sS -o /dev/null -w "%{http_code}" \
-            "https://ylxizoepyqpulasqqyfc.supabase.co/rest/v1/friends?select=id&limit=1" \
-            -H "apikey: sb_publishable_ite9_Hl4DSExGhyPXQys8Q_O0JeLt97")
-          echo "Supabase responded: $code"
-          if [ "$code" -ge 500 ] || [ "$code" = "000" ]; then
-            echo "::error::Supabase didn't respond as expected (HTTP $code) — check the project hasn't been deleted or the key hasn't been rotated."
+          base="https://ylxizoepyqpulasqqyfc.supabase.co"
+          key="sb_publishable_ite9_Hl4DSExGhyPXQys8Q_O0JeLt97"
+          fail=0
+          check() {
+            code=$(curl -sS -o /dev/null -w "%{http_code}" "$1" -H "apikey: $key" -H "Prefer: count=exact" || echo 000)
+            echo "$code  $1"
+            if [ "$code" != "200" ] && [ "$code" != "206" ]; then fail=1; fi
+          }
+          for t in friends ratings nights custom_items; do
+            check "$base/rest/v1/$t?select=*&limit=50"
+            check "$base/rest/v1/$t?select=id&limit=1"
+          done
+          check "$base/auth/v1/health"
+          if [ "$fail" = "1" ]; then
+            echo "::error::At least one Supabase request didn't return 200 — check the project hasn't been paused or deleted, the key hasn't been rotated, and the table GRANTs are still in place."
             exit 1
           fi
