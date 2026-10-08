@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-10",
+  "updated": "2026-10-08",
   "nights": [
     {
       "id": "2026-10-31-negroni-night",
@@ -230,6 +230,204 @@
             "name": "PUNCH",
             "url": "https://punchdrink.com/recipes/sour-cherry-negroni/"
           }
+        }
+      ]
+    },
+    {
+      "id": "2026-10-10-intro-to-cocktails",
+      "date": "2026-10-10",
+      "title": "Intro to Cocktails",
+      "note": "An introduction to cocktails in two parts. Part one: the classics and modern classics. Part two: the depth and breadth of cocktails, with ingredients guests probably haven't come across.",
+      "cocktails": [
+        {
+          "id": "vesper",
+          "name": "Vesper",
+          "description": "60ml gin, 20ml vodka, 10ml Lillet Blanc. Shaken, fine strained, lemon twist expressed over.",
+          "base": "gin",
+          "tags": [
+            "part-one",
+            "modern-classic"
+          ],
+          "source": {
+            "name": "Difford's Guide",
+            "url": "https://www.diffordsguide.com/cocktails/recipe/2597/vesper-dry-martini"
+          },
+          "strength": 10,
+          "sweetSour": 10
+        },
+        {
+          "id": "negroni-campari",
+          "name": "Negroni with Campari",
+          "description": "The classic: 30ml gin, 30ml Campari, 30ml sweet vermouth.",
+          "base": "gin",
+          "tags": [
+            "part-one",
+            "classic"
+          ],
+          "source": {
+            "name": "Difford's Guide",
+            "url": "https://www.diffordsguide.com/cocktails/recipe/1392/negroni-cocktail"
+          },
+          "strength": 4,
+          "sweetSour": 5
+        },
+        {
+          "id": "manhattan-perfect",
+          "name": "Manhattan (Perfect)",
+          "description": "30ml rye, 30ml bourbon, 12.5ml sweet vermouth, 12.5ml dry vermouth, 2 dashes Angostura. Stirred, strained into a coupe, orange twist and cherry.",
+          "base": "whisky",
+          "tags": [
+            "part-one",
+            "classic"
+          ],
+          "source": {
+            "name": "Difford's Guide",
+            "url": "https://www.diffordsguide.com/cocktails/recipe/1246/manhattan-perfect"
+          },
+          "strength": 9,
+          "sweetSour": 8
+        },
+        {
+          "id": "sidecar",
+          "name": "Sidecar",
+          "description": "45ml cognac, 15ml triple sec, 22.5ml lemon juice, 5ml rich sugar syrup, 5ml water. Shaken, fine strained into a sugar-rimmed coupe, lemon twist.",
+          "base": "brandy",
+          "tags": [
+            "part-one",
+            "classic"
+          ],
+          "source": {
+            "name": "Difford's Guide",
+            "url": "https://www.diffordsguide.com/cocktails/recipe/4791/sidecar"
+          },
+          "strength": 7,
+          "sweetSour": 7
+        },
+        {
+          "id": "sazerac",
+          "name": "Sazerac",
+          "description": "45ml rye, 7.5ml rich sugar syrup, 3 dashes Peychaud's. Stirred, strained into a rocks glass rinsed with absinthe, lemon twist.",
+          "base": "whisky",
+          "tags": [
+            "part-one",
+            "classic"
+          ],
+          "source": {
+            "name": "Difford's Guide",
+            "url": "https://www.diffordsguide.com/cocktails/recipe/3390/sazerac-new-orleans-style"
+          }
+        },
+        {
+          "id": "amaretto-sour",
+          "name": "Amaretto Sour",
+          "description": "60ml amaretto, 30ml lemon juice, 1 dash Angostura, 15ml egg white (foamer instead). Shake with ice, strain back into the shaker, dry shake, fine strain over ice.",
+          "base": "other",
+          "tags": [
+            "part-one",
+            "modern-classic"
+          ],
+          "source": {
+            "name": "Difford's Guide",
+            "url": "https://www.diffordsguide.com/cocktails/recipe/53/amaretto-sour"
+          },
+          "strength": 3,
+          "sweetSour": 5
+        },
+        {
+          "id": "gin-basil-smash",
+          "name": "Gin Basil Smash",
+          "description": "60ml gin, 22.5ml lemon juice, 10ml rich sugar syrup, 12 basil leaves. Muddle basil, shake with ice, fine strain.",
+          "base": "gin",
+          "tags": [
+            "part-two",
+            "herbal"
+          ],
+          "source": {
+            "name": "Difford's Guide",
+            "url": "https://www.diffordsguide.com/cocktails/recipe/3282/gin-basil-smash"
+          },
+          "strength": 8,
+          "sweetSour": 6
+        },
+        {
+          "id": "daisy-cutter-martini",
+          "name": "Daisy Cutter Martini",
+          "description": "50ml vodka (from the freezer), 20ml chilled dry vermouth, 20ml elderflower liqueur, 5ml yellow Chartreuse, 3 mint leaves. Gently muddle mint, shake with ice, fine strain.",
+          "base": "vodka",
+          "tags": [
+            "part-two",
+            "floral"
+          ],
+          "source": {
+            "name": "Difford's Guide",
+            "url": "https://www.diffordsguide.com/cocktails/recipe/2619/daisy-cutter-martini"
+          },
+          "strength": 8,
+          "sweetSour": 7
+        },
+        {
+          "id": "corpse-reviver-no-blue",
+          "name": "Corpse Reviver No.Blue",
+          "description": "22.5ml gin, 22.5ml Lillet Blanc, 22.5ml blue curaçao, 22.5ml lemon juice, 3 dashes absinthe. Shake with ice, fine strain, lemon twist expressed over.",
+          "base": "gin",
+          "tags": [
+            "part-two",
+            "showpiece"
+          ],
+          "source": {
+            "name": "Difford's Guide",
+            "url": "https://www.diffordsguide.com/cocktails/recipe/2920/corpse-reviver-noblue"
+          },
+          "strength": 6,
+          "sweetSour": 6
+        },
+        {
+          "id": "wild-ward",
+          "name": "Wild Ward",
+          "description": "30ml rye, 22.5ml Suze, 15ml maraschino liqueur, 22.5ml lemon juice, 3 dashes cardamom bitters. Shake with ice, fine strain, lemon twist expressed over.",
+          "base": "whisky",
+          "tags": [
+            "part-two",
+            "bitter"
+          ],
+          "source": {
+            "name": "Difford's Guide",
+            "url": "https://www.diffordsguide.com/cocktails/recipe/3970/wild-ward"
+          },
+          "strength": 5,
+          "sweetSour": 10
+        },
+        {
+          "id": "sophisticated-dane",
+          "name": "Sophisticated Dane",
+          "description": "45ml akvavit, 22.5ml red bitter (Campari-style), 22.5ml sweet vermouth. Stir with ice, strain over a large cube, lemon twist expressed over.",
+          "base": "other",
+          "tags": [
+            "part-two",
+            "akvavit"
+          ],
+          "source": {
+            "name": "Difford's Guide",
+            "url": "https://www.diffordsguide.com/cocktails/recipe/13473/sophisticated-dane"
+          },
+          "strength": 7,
+          "sweetSour": 10
+        },
+        {
+          "id": "s-and-m",
+          "name": "S&M",
+          "description": "40ml peated single malt whisky, 40ml amaro (Montenegro). Stir with ice, strain over a large cube, orange twist expressed over.",
+          "base": "whisky",
+          "tags": [
+            "part-two",
+            "smoky"
+          ],
+          "source": {
+            "name": "Difford's Guide",
+            "url": "https://www.diffordsguide.com/cocktails/recipe/30319/s-and-m"
+          },
+          "strength": 8,
+          "sweetSour": 6
         }
       ]
     }
