@@ -2006,7 +2006,13 @@ c-96 8 -148 25 -148 49 0 14 -8 18 -35 18 -33 0 -35 2 -35 35 0 32 2 35 30 35
     var today = nights.filter(function (n) { return dayDiff(parseYMD(n.date), todayLocal()) === 0; })[0];
     if (today) return goToNight(today.id, true);
     if (!nights.length) return screenEmptyNights();
-    return goToNight(nights[0].id, true, true);
+    // Nothing today: show the SOONEST upcoming night (so tomorrow's menu is ready tonight), not the
+    // furthest-future one. With nothing upcoming, fall back to the most recent past night.
+    var upcoming = nights.filter(function (n) { return dayDiff(parseYMD(n.date), todayLocal()) > 0; });
+    var pick = upcoming.length
+      ? upcoming.reduce(function (a, b) { return parseYMD(b.date) < parseYMD(a.date) ? b : a; })
+      : nights[0];
+    return goToNight(pick.id, true, true);
   }
 
   function screenNightUnknown() {
