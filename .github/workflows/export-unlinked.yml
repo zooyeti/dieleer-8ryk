@@ -1,0 +1,46 @@
+name: Export unlinked drinks
+
+# Lists off-menu drinks that have no Difford's link and no free-text recipe, plus the nights table,
+# into data/unlinked-drinks.json. Simon's scheduled check reads this file, because the cloud
+# sandbox it runs in can't reach supabase.co directly but can read GitHub.
+# Read-only against Supabase (publishable key, same as the app). No timestamp in the file, so a
+# day with nothing new produces no commit.
+
+on:
+  schedule:
+    - cron: "30 6 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Export from Supabase
+        run: |
+          base="https://ylxizoepyqpulasqqyfc.supabase.co"
+          key="sb_publishable_ite9_Hl4DSExGhyPXQys8Q_O0JeLt97"
+          mkdir -p data
+          items=$(curl -fsS -G "$base/rest/v1/custom_items" \
+            --data-urlencode "select=id,night_id,name,base" \
+            --data-urlencode "and=(or(source_url.is.null,source_url.eq.),or(recipe.is.null,recipe.eq.))" \
+            --data-urlencode "order=night_id,name" \
+            -H "apikey: $key")
+          nights=$(curl -fsS -G "$base/rest/v1/nights" \
+            --data-urlencode "select=id,date,title" \
+            --data-urlencode "order=date" \
+            -H "apikey: $key")
+          jq -n --argjson unlinked "$items" --argjson nights "$nights" \
+            '{nights: $nights, unlinked: $unlinked}' > data/unlinked-drinks.json
+          cat data/unlinked-drinks.json
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/unlinked-drinks.json
+          if git diff --cached --quiet; then echo "No change."; exit 0; fi
+          git commit -m "Update unlinked drinks export"
+          git push
