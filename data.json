@@ -306,16 +306,12 @@
         {
           "id": "sazerac",
           "name": "Sazerac",
-          "description": "45ml rye, 7.5ml rich sugar syrup, 3 dashes Peychaud's. Stirred, strained into a rocks glass rinsed with absinthe, lemon twist.",
+          "description": "45ml rye, 15ml cognac, 5ml demerara gum syrup, 4 dashes Peychaud's, 1 dash Angostura. Stirred, strained straight up (no ice) into a glass rinsed with absinthe, lemon twist expressed and discarded. From Death & Co's Cocktail Codex.",
           "base": "whisky",
           "tags": [
             "part-one",
             "classic"
-          ],
-          "source": {
-            "name": "Difford's Guide",
-            "url": "https://www.diffordsguide.com/cocktails/recipe/3390/sazerac-new-orleans-style"
-          }
+          ]
         },
         {
           "id": "amaretto-sour",
