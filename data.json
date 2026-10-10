@@ -290,18 +290,12 @@
         {
           "id": "sidecar",
           "name": "Sidecar",
-          "description": "45ml cognac, 15ml triple sec, 22.5ml lemon juice, 5ml rich sugar syrup, 5ml water. Shaken, fine strained into a sugar-rimmed coupe, lemon twist.",
+          "description": "45ml cognac, 30ml triple sec, 15ml lemon juice. Shaken, strained into a coupe, lemon zest twist. Andy's own recipe.",
           "base": "brandy",
           "tags": [
             "part-one",
             "classic"
-          ],
-          "source": {
-            "name": "Difford's Guide",
-            "url": "https://www.diffordsguide.com/cocktails/recipe/4791/sidecar"
-          },
-          "strength": 7,
-          "sweetSour": 7
+          ]
         },
         {
           "id": "sazerac",
