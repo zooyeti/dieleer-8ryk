@@ -174,18 +174,16 @@
           }
         },
         {
-          "id": "blue-negroni",
-          "name": "Blue Negroni",
-          "description": "30ml Old Tom gin, 20ml Luxardo Bitter Bianco, 20ml bianco vermouth, 10ml dry vermouth, 10ml blue curaçao, 3 drops saline solution.",
+          "id": "sour-cherry-negroni",
+          "name": "Sour Cherry Negroni",
+          "description": "30ml gin, 22.5ml Campari, 22.5ml sweet vermouth (Martini & Rossi Riserva Speciale Rubino), 15ml crème de noyaux, 5ml acid-adjusted cherry juice, dash of saline solution (10:1 water to salt). From Hawksmoor NYC.",
           "base": "gin",
           "tags": [
             "wild"
           ],
-          "strength": 8,
-          "sweetSour": 7,
           "source": {
-            "name": "Difford's Guide",
-            "url": "https://www.diffordsguide.com/cocktails/recipe/30888/blue-negroni"
+            "name": "PUNCH",
+            "url": "https://punchdrink.com/recipes/sour-cherry-negroni/"
           }
         },
         {
@@ -217,19 +215,6 @@
           },
           "strength": 7,
           "sweetSour": 6
-        },
-        {
-          "id": "sour-cherry-negroni",
-          "name": "Sour Cherry Negroni",
-          "description": "30ml gin, 22.5ml Campari, 22.5ml sweet vermouth (Martini & Rossi Riserva Speciale Rubino), 15ml crème de noyaux, 5ml acid-adjusted cherry juice, dash of saline solution (10:1 water to salt). From Hawksmoor NYC.",
-          "base": "gin",
-          "tags": [
-            "dessert"
-          ],
-          "source": {
-            "name": "PUNCH",
-            "url": "https://punchdrink.com/recipes/sour-cherry-negroni/"
-          }
         }
       ]
     },
